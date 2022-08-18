@@ -3,7 +3,7 @@ import Carousel from "react-material-ui-carousel";
 import "../Product/ProductDetails.css"
 import { useSelector, useDispatch } from "react-redux";
 import {
-    // clearErrors,
+    clearErrors,
     getProductDetails,
     // newReview,
   } from "../../actions/productAction";
@@ -12,10 +12,12 @@ import ReactStars from 'react-rating-stars-component';
 
   // import { Param } from 'cloudinary-core'
 import ReviewCard from "./ReviewCard.js"
+import Loader from '../layout/Loader/Loader';
+import { useAlert } from 'react-alert';
 
 const ProductDetails=() =>{
   const dispatch = useDispatch();
-  // const alert = useAlert();
+  const alert = useAlert();
   const { id } = useParams();
 
   const { product,loading,error } = useSelector(
@@ -80,10 +82,10 @@ const ProductDetails=() =>{
   // };
 
   useEffect(() => {
-    // if (error) {
-    //   alert.error(error);
-    //   dispatch(clearErrors());
-    // }
+    if (error) {
+      alert.error(error);
+      dispatch(clearErrors());
+    }
 
     // if (reviewError) {
     //   alert.error(reviewError);
@@ -95,9 +97,12 @@ const ProductDetails=() =>{
     //   dispatch({ type: NEW_REVIEW_RESET });
     // }
     dispatch(getProductDetails(id));
-  }, [dispatch, id]); 
+  }, [dispatch, id,error,alert]); 
   return (
     <Fragment>
+      {loading? 
+      <Loader/>:(
+      <Fragment>
         <div className="ProductDetails">
             <div>
             <Carousel>
@@ -165,6 +170,8 @@ const ProductDetails=() =>{
           )}
     
         
+    </Fragment>
+    )}
     </Fragment>
   )
 }
