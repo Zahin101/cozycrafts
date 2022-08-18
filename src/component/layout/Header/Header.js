@@ -3,8 +3,6 @@ import { ReactNavbar } from "overlay-navbar";
 import logo from "../../../images/logo.png";
 import { FaShoppingCart, FaUser, FaSearch } from "react-icons/fa";
 
-const options = {};
-
 const Header = () => {
   return (
     <ReactNavbar
