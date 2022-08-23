@@ -1,26 +1,28 @@
-import {React,  Fragment,useEffect } from 'react'
+import { React, Fragment, useEffect, useState } from "react";
 import Carousel from "react-material-ui-carousel";
-import "../Product/ProductDetails.css"
+import "../Product/ProductDetails.css";
 import { useSelector, useDispatch } from "react-redux";
 import {
-    clearErrors,
-    getProductDetails,
-    // newReview,
-  } from "../../actions/productAction";
-  import { useParams } from 'react-router-dom'
-import ReactStars from 'react-rating-stars-component';
+  clearErrors,
+  getProductDetails,
+  // newReview,
+} from "../../actions/productAction";
+import { useParams } from "react-router-dom";
+import ReactStars from "react-rating-stars-component";
 
-  // import { Param } from 'cloudinary-core'
-import ReviewCard from "./ReviewCard.js"
-import Loader from '../layout/Loader/Loader';
-import { useAlert } from 'react-alert';
+// import { Param } from 'cloudinary-core'
+import ReviewCard from "./ReviewCard.js";
+import Loader from "../layout/Loader/Loader";
+import { useAlert } from "react-alert";
+import MetaData from "../layout/MetaData";
+import { addItemsToCart } from "../../actions/cartAction";
 
-const ProductDetails=() =>{
+const ProductDetails = () => {
   const dispatch = useDispatch();
   const alert = useAlert();
   const { id } = useParams();
 
-  const { product,loading,error } = useSelector(
+  const { product, loading, error } = useSelector(
     (state) => state.productDetails
   );
 
@@ -36,34 +38,34 @@ const ProductDetails=() =>{
     edit: false,
     color: "rgba(20,20,20)",
     activeColor: "rgb(255,20,20)",
-    size: window.innerWidth<600?20:25,
-    value:product.ratings,
-    isHalf:true
+    size: window.innerWidth < 600 ? 20 : 25,
+    value: product.ratings,
+    isHalf: true,
   };
 
-  // const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
   // const [open, setOpen] = useState(false);
   // const [rating, setRating] = useState(0);
   // const [comment, setComment] = useState("");
 
-  // const increaseQuantity = () => {
-  //   if (product.Stock <= quantity) return;
+  const increaseQuantity = () => {
+    if (product.stock <= quantity) return;
 
-  //   const qty = quantity + 1;
-  //   setQuantity(qty);
-  // };
+    const qty = quantity + 1;
+    setQuantity(qty);
+  };
 
-  // const decreaseQuantity = () => {
-  //   if (1 >= quantity) return;
+  const decreaseQuantity = () => {
+    if (1 >= quantity) return;
 
-  //   const qty = quantity - 1;
-  //   setQuantity(qty);
-  // };
+    const qty = quantity - 1;
+    setQuantity(qty);
+  };
 
-  // const addToCartHandler = () => {
-  //   dispatch(addItemsToCart(match.params.id, quantity));
-  //   alert.success("Item Added To Cart");
-  // };
+  const addToCartHandler = () => {
+    dispatch(addItemsToCart(id, quantity));
+    alert.success("Item Added To Cart");
+  };
 
   // const submitReviewToggle = () => {
   //   open ? setOpen(false) : setOpen(true);
@@ -97,15 +99,17 @@ const ProductDetails=() =>{
     //   dispatch({ type: NEW_REVIEW_RESET });
     // }
     dispatch(getProductDetails(id));
-  }, [dispatch, id,error,alert]); 
+  }, [dispatch, id, error, alert]);
   return (
     <Fragment>
-      {loading? 
-      <Loader/>:(
-      <Fragment>
-        <div className="ProductDetails">
+      {loading ? (
+        <Loader />
+      ) : (
+        <Fragment>
+          <MetaData tite={`${product.name} ---- Cozy Crafts`} />
+          <div className="ProductDetails">
             <div>
-            <Carousel>
+              <Carousel>
                 {product.images &&
                   product.images.map((item, i) => (
                     <img
@@ -118,11 +122,11 @@ const ProductDetails=() =>{
               </Carousel>
             </div>
             <div>
-            <div className="detailsBlock-1">
+              <div className="detailsBlock-1">
                 <h2>{product.name}</h2>
                 <p>Product # {product._id}</p>
-            </div>
-            <div className="detailsBlock-2">
+              </div>
+              <div className="detailsBlock-2">
                 <ReactStars {...options} />
                 <span className="detailsBlock-2-span">
                   {" "}
@@ -133,13 +137,11 @@ const ProductDetails=() =>{
                 <h1>{`${product.price}`}</h1>
                 <div className="detailsBlock-3-1">
                   <div className="detailsBlock-3-1-1">
-                    
-                    <button>-</button>
-                    <input value="1" type="Number" />
-                    <button>+</button>
-                    
+                    <button onClick={decreaseQuantity}>-</button>
+                    <input readOnly value={quantity} type="Number" />
+                    <button onClick={increaseQuantity}>+</button>
                   </div>{" "}
-                  <button>Add to Cart</button>
+                  <button onClick={addToCartHandler}>Add to Cart</button>
                 </div>
                 <p>
                   Status:{" "}
@@ -148,17 +150,15 @@ const ProductDetails=() =>{
                   </b>
                 </p>
                 <div className="detailsBlock-4">
-                Description : <p>{product.description}</p>
-              </div>
+                  Description : <p>{product.description}</p>
+                </div>
 
-              <button  className="submitReview">
-                Submit Review
-              </button>
+                <button className="submitReview">Submit Review</button>
+              </div>
             </div>
-            </div>
-        </div>
-        <h3 className="reviewsHeading">REVIEWS</h3>  
-        {product.reviews && product.reviews[0] ? (
+          </div>
+          <h3 className="reviewsHeading">REVIEWS</h3>
+          {product.reviews && product.reviews[0] ? (
             <div className="reviews">
               {product.reviews &&
                 product.reviews.map((review) => (
@@ -168,12 +168,10 @@ const ProductDetails=() =>{
           ) : (
             <p className="noReviews">No Reviews Yet</p>
           )}
-    
-        
+        </Fragment>
+      )}
     </Fragment>
-    )}
-    </Fragment>
-  )
-}
+  );
+};
 
-export default ProductDetails
+export default ProductDetails;
